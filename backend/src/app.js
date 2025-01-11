@@ -17,7 +17,17 @@ const app = express();
 app.use(express.static(path.join(__dirname, '..', 'public')));
 app.set('views', path.join(__dirname, '..', 'views'));
 app.set('view engine', 'ejs');
-app.use(session(sessionConfig));
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+    },
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({

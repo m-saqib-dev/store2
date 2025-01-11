@@ -1,15 +1,15 @@
 const session = require('express-session');
 
 const sessionConfig = {
-    secret: process.env.COOKIE_SECRET, // DO NOT USE THIS IN PRODUCTION
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        secure: process.env.NODE_ENV === "production", // Only for local HTTP (NOT for production)
-        httpOnly: true,
-        sameSite: 'lax', // Use 'lax' for local testing on different ports. Change to 'strict' for production
-        maxAge: 1000*60*60
-    },
+  secret: process.env.SESSION_SECRET, // Load secret from environment variable
+  resave: false, 
+  saveUninitialized: true,
+  cookie: {
+    maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week in milliseconds
+    httpOnly: true, 
+    secure: process.env.NODE_ENV === 'production', // Set secure flag in production
+    sameSite: 'strict', 
+  },
 };
 
 module.exports = sessionConfig;
