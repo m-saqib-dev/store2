@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <header>
+        <h1>Our Products</h1>
+    </header>
+    <main>
+        <ul class="product-list">
+            <% products.forEach(function(product) { %>
+                <li class="product-list-item">
+                    <img src="<%= product.image %>" alt="<%= product.name %>">
+                    <h3><%= product.name %></h3>
+                    <p><%= product.description %></p>
+                    <p class="price">Price: $<%= product.price %></p>
+                </li>
+            <% }); %>
+        </ul>
+    </main>
+    <footer>
+        <p>&copy; <%= new Date().getFullYear() %> Your Company</p>
+    </footer>
+</body>
+</html>
