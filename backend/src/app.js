@@ -9,6 +9,8 @@ const viewsRouter = require('./viewsRoute/viewsRouter');
 const path = require('path');
 const cors = require('cors');
 const passport = require('./strategies/local');
+const helmet = require('helmet');
+const limiter = require('./middleware/limiter');
 
 const MongoStore = require('connect-mongo');
 const { mongo } = require('mongoose');
@@ -20,6 +22,8 @@ const mongoStore = MongoStore.create({
     collectionName: 'sessions',
 })
 // Middleware
+app.use(helmet());
+app.use(limiter);
 app.use(express.static(path.join(__dirname, '..', 'public')));
 app.set('views', path.join(__dirname, '..', 'views'));
 app.set('view engine', 'ejs');
