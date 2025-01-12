@@ -8,11 +8,17 @@ const session = require('express-session');
 const viewsRouter = require('./viewsRoute/viewsRouter');
 const path = require('path');
 const cors = require('cors');
-const passport = require('./strategies/local'); 
+const passport = require('./strategies/local');
+
+const MongoStore = require('connect-mongo');
+const { mongo } = require('mongoose');
 require('dotenv').config();
 
 const app = express();
-
+const mongoStore = MongoStore.create({
+    mongoUrl: process.env.MONGO_URI,
+    collectionName: 'sessions',
+})
 // Middleware
 app.use(express.static(path.join(__dirname, '..', 'public')));
 app.set('views', path.join(__dirname, '..', 'views'));
@@ -21,8 +27,9 @@ app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
+    store: mongoStore,
     cookie: {
-        maxAge: 1000 * 60 * 60 * 24 * 7,
+        maxAge: 30000,
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',

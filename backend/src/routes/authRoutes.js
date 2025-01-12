@@ -19,6 +19,7 @@ router.post('/login', validateLogin,(req, res, next) => {
         });
     })(req, res, next)}
 )
+
 router.get('/session', (req, res) => {
     if (req.isAuthenticated()) {
         return res.status(200).json({ loggedIn: true, user: req.user });
@@ -36,9 +37,6 @@ router.post('/logout', (req, res) => {
             res.status(200).json({ message: 'Logged out successfully.' });
         });
     });
-});
-router.get('/login', redirectIfAuthenticated, (req, res) => {
-    res.render('login'); // Render the login page
 });
 
 module.exports = router
