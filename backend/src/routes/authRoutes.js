@@ -1,9 +1,10 @@
 const { validateLogin, redirectIfAuthenticated } = require('../middleware/authMiddleware');
+const { loginLimiter } = require('../middleware/limiter');
 const passport = require('../strategies/local')
 const express = require('express')
 const router = express();
 
-router.post('/login', validateLogin,(req, res, next) => {
+router.post('/login',loginLimiter, validateLogin,(req, res, next) => {
     passport.authenticate('local', (err, user, info) => {
         if (err) {
             return res.status(500).json({ error: 'An internal error occurred.' });
@@ -15,7 +16,10 @@ router.post('/login', validateLogin,(req, res, next) => {
             if (loginErr) {
                 return res.status(500).json({ error: 'Login failed.' });
             }
-            return res.status(200).json({ message: 'Login successful!', user });
+            return res.status(200).json({success:true , message: 'Login successful!', user:{
+                ...user._doc,
+                password:undefined
+            } });
         });
     })(req, res, next)}
 )

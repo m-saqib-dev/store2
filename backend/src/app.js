@@ -10,7 +10,7 @@ const path = require('path');
 const cors = require('cors');
 const passport = require('./strategies/local');
 const helmet = require('helmet');
-const limiter = require('./middleware/limiter');
+const {limiter} = require('./middleware/limiter');
 
 const MongoStore = require('connect-mongo');
 const { mongo } = require('mongoose');
