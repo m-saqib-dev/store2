@@ -1,37 +1,75 @@
-import { useEffect, useState } from 'react';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import { checkSession } from './api/auth';
 // import Home from './Home';
 import Login from './pages/auth/login';
+import { useDispatch, useSelector } from 'react-redux';
+import Home from './pages/home';
+import SignUp from './pages/auth/signup';
+import { AppDispatch } from './app/store';
+import { setLogout, setUser } from './features/user';
+import CustomLink from './componets/Link';
+import CustomButton from './componets/button';
+
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const location = useLocation();
-
+  const dispatch = useDispatch<AppDispatch>();
+  const { isLoggedIn,name } = useSelector((state: any) => state.user);
   useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        const response = await checkSession();
-        setIsLoggedIn(response.data.isLoggedIn); 
-      } catch (error) {
-        console.error("Error checking session:", error);
-        // Handle error, e.g., display an error message or redirect to login
+    const fetchSession = async () => {
+      const res = await checkSession();
+      if (!res.success) {
+        return;
       }
+      dispatch(setUser({
+        adress: res.data.address,
+        id: res.data._id,
+        email: res.data.email,
+        role: res.data.role,
+        name: res.data.name
+      }));
     };
-
-    checkLoginStatus();
-  }, []);
-
-  const PrivateRoute = ({ children }:any) => {
-    return isLoggedIn ? children : <Navigate to="/login" state={{ from: location }} replace />;
-  };
+    fetchSession();
+    console.log("Is Session Valid", isLoggedIn);
+  }, [dispatch]);
 
   return (
-    <Routes>
-      <Route path="/" element={<PrivateRoute><h1>Home</h1></PrivateRoute>} />
-      <Route path="/login" element={<Login />} />
-      {/* Other routes */}
-    </Routes>
+    <>
+
+      <nav className=''>
+        <ul className='flex flex-row justify-end w-full bg-black px-6'>
+          
+            <CustomLink to="/">Home</CustomLink>
+          
+          {isLoggedIn ?
+          <>
+            <div className='flex'>
+               <span className='text-white self-center '>Welcome,</span> <CustomLink to="/">{name}</CustomLink>
+            </div>
+            <CustomButton className='self-center justify-self-end' onClick={async () => {
+              dispatch(setLogout());
+            }}>LogOot</CustomButton> 
+            </>
+            : <>
+              
+                <CustomLink to="/login">Login</CustomLink>
+              
+              
+                <CustomLink to="/signup">SignUp</CustomLink>
+            </>
+          }
+        </ul>
+      </nav>
+
+      <Routes >
+        {/* Other routes */}
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+      </Routes>
+    </>
+    // <BrowserRouter/>
+
   );
 }
 

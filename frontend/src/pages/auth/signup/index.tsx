@@ -1,23 +1,29 @@
 import { useState } from "react";
+// import { signUp } from "../../../api/auth";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../../features/user";
-import { Link, useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../../app/store";
+import { Link, useNavigate } from "react-router-dom";
 import InputField from "../../../componets/InputField";
-import { login } from "../../../api/auth";
+import { signup } from "../../../api/auth";
 import CustomButton from "../../../componets/button";
 
-const Login = () => {
+const SignUp = () => {
     const [error, setError] = useState("");
     const naviate = useNavigate()
     const dispatch = useDispatch<AppDispatch>();
-    const handleLogin = async (event: React.FormEvent) => {
+
+    const handleSignUp = async (event: React.FormEvent) => {
         event.preventDefault();
         setError("");
         const formData = new FormData(event.target as HTMLFormElement);
         const data = Object.fromEntries(formData.entries());
+        if (data.password !== data.confirmPassword) {
+            setError("Password and Confirm Password must be same");
+            return;
+        }
 
-        const res = await login(data);
+        const res = await signup(data)
         if (!res.success) {
             setError(res.error)
             return;
@@ -30,7 +36,6 @@ const Login = () => {
             name: res.data.name
         }))
         naviate("/");
-
     }
 
     return (
@@ -42,9 +47,16 @@ const Login = () => {
                         <span className="font-medium"></span> {error}
                     </div>
                 )}
-                <h2 className="text-2xl py-4 font-semibold text-gray-800 dark:text-white">LogIn</h2>
-                <form onSubmit={handleLogin}>
+                <h2 className="text-2xl py-4 font-semibold text-gray-800 dark:text-white">SignUp</h2>
+                <form onSubmit={handleSignUp}>
                     <div className="flex flex-col gap-4">
+                        <InputField
+                            label="name"
+                            error=""
+                            name="name"
+                            placeholder="Enter your name"
+                            type="text"
+                        />
                         <InputField
                             label="email"
                             error=""
@@ -59,15 +71,22 @@ const Login = () => {
                             placeholder="Enter your password"
                             type="password"
                         />
+                        <InputField
+                            label="confirm password"
+                            error=""
+                            name="confirmPassword"
+                            placeholder="Confirm your password"
+                            type="password"
+                        />
                         <CustomButton type="submit">
-                            Login
+                            SignUp
                         </CustomButton>
-                        <Link to="/signup" className="text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-500">Don't have an account? SignUp</Link>
+                        <Link to="/login" className="text-blue-700 hover:underline dark:text-blue-400">Already have an account? Login</Link>
                     </div>
                 </form>
             </div>
         </div>
-    )
+    );
 };
 
-export default Login;
+export default SignUp;
